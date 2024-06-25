@@ -1,5 +1,21 @@
+import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+
 export class CreateCatDto {
-  name: string;
-  age: number;
-  breed: string;
+  constructor(name: string, age: number, breed: string) {
+    this.age = age;
+    this.name = name;
+    this.breed = breed;
+  }
+
+  @IsNotEmpty()
+  @IsString()
+  readonly name: string;
+
+  @IsNotEmpty()
+  @IsNumber()
+  readonly age: number;
+
+  @IsNotEmpty()
+  @IsString()
+  readonly breed: string;
 }

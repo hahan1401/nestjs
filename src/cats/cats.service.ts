@@ -1,21 +1,33 @@
 import { Injectable } from '@nestjs/common';
-import { Cat } from 'src/cats/interfaces/cats.interface';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { HttpExceptionFilter } from 'src/exception/http-exception.filter';
+import { CreateCatDto } from './dto/create-cat.dto';
+import { Cat } from './schemas/cat.schema';
 
 @Injectable()
 export class CatsService {
-  private readonly cats: Cat[] = [
-    {
-      age: 1,
-      breed: '1',
-      name: '1',
-    },
-  ];
+  constructor(@InjectModel(Cat.name) private readonly catModel: Model<Cat>) {}
 
-  create(cat: Cat) {
-    this.cats.push(cat);
+  async create(createCatDto: CreateCatDto): Promise<Cat> {
+    const createdCat = await this.catModel.create(createCatDto);
+    return createdCat;
   }
 
-  findAll(): Cat[] {
-    return this.cats;
+  async findAll(): Promise<Cat[]> {
+    return this.catModel.find().exec();
+  }
+
+  async findOne(id: number) {
+    return this.catModel.findOne({ id: id });
+  }
+
+  async deleteAll(): Promise<boolean | void> {
+    try {
+      await this.catModel.deleteMany();
+      return true;
+    } catch (err) {
+      throw new HttpExceptionFilter();
+    }
   }
 }
