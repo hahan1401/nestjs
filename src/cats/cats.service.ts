@@ -11,7 +11,7 @@ export class CatsService {
 
   async create(createCatDto: CreateCatDto): Promise<Cat> {
     const createdCat = await this.catModel.create(createCatDto);
-    return createdCat;
+    return Cat.toDTO(createdCat);
   }
 
   async findAll(): Promise<Cat[]> {

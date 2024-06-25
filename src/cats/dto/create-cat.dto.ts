@@ -7,6 +7,8 @@ export class CreateCatDto {
     this.breed = breed;
   }
 
+  readonly id: string;
+
   @IsNotEmpty()
   @IsString()
   readonly name: string;
