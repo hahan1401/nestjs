@@ -2,18 +2,16 @@ import { BullModule } from '@nestjs/bull';
 import { CacheModule } from '@nestjs/cache-manager';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { APP_GUARD } from '@nestjs/core';
 import { MongooseModule } from '@nestjs/mongoose';
 import * as redisStore from 'cache-manager-redis-store';
 import type { RedisClientOptions } from 'redis';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { AuthController } from './auth/auth.controller';
+import { AuthGuard } from './auth/auth.guard';
 import { AuthModule } from './auth/auth.module';
-import { AuthService } from './auth/auth.service';
 import { CatsModule } from './cats/cats.module';
-import { UsersController } from './users/users.controller';
 import { UsersModule } from './users/users.module';
-import { UsersService } from './users/users.service';
 
 @Module({
   imports: [
@@ -22,7 +20,7 @@ import { UsersService } from './users/users.service';
       isGlobal: true,
     }),
     MongooseModule.forRoot(
-      'mongodb+srv://hanvietha141:hanvietha141@express-nextjs.2aezl0o.mongodb.net/?retryWrites=true&w=majority&appName=express-nextjs',
+      'mongodb+srv://hanvietha141:hanvietha141@express-nextjs.2aezl0o.mongodb.net/?retryWrites=true&w=majority&appName=express-nextjs/nestjs',
     ),
     CacheModule.register<RedisClientOptions>({
       isGlobal: true,
@@ -46,8 +44,14 @@ import { UsersService } from './users/users.service';
     UsersModule,
     AuthModule,
   ],
-  exports: [CatsModule],
-  controllers: [AppController, UsersController, AuthController],
-  providers: [AppService, UsersService, AuthService],
+  exports: [CatsModule, UsersModule],
+  controllers: [AppController],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
+  ],
 })
 export class AppModule {}
