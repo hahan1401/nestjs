@@ -10,6 +10,8 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
+import { Roles } from 'src/auth/decorator/public.decorator';
+import { Role } from 'src/constants/role.enum';
 import { CatsService } from './cats.service';
 import { CreateCatDto } from './dto/create-cat.dto';
 import { Cat } from './schemas/cat.schema';
@@ -19,6 +21,7 @@ export class CatsController {
   constructor(private readonly catsService: CatsService) {}
 
   @Post()
+  @Roles(Role.Admin)
   @HttpCode(200)
   @UsePipes(new ValidationPipe({ transform: true }))
   async create(@Body(new ValidationPipe()) createCatDto: CreateCatDto) {
